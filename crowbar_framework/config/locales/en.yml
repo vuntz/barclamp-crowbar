@@ -182,7 +182,7 @@ en:
       group: Group
       alias: Alias  
       public_name: Public Name
-      hw_description: Hardware Information
+      hw_description: Information
       description: Description
       bios: BIOS
       raid: RAID
