@@ -137,7 +137,10 @@ class NodesController < ApplicationController
         flash[:notice] = I18n.t('nochange', :scope=>'nodes.list')
       end
     end
+
     @options = CrowbarService.read_options
+    @columns = @options[:show].count + 6
+
     @nodes = {}
     NodeObject.all.each do |node|
       @nodes[node.handle] = node if params[:allocated].nil? or !node.allocated?
