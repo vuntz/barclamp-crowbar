@@ -156,7 +156,6 @@ class NodesController < ApplicationController
     NodeObject.all.each do |node|
       if node.target_platform.blank?
          node.target_platform = default_os
-         node.save
       end
       @nodes[node.handle] = node if params[:allocated].nil? or !node.allocated?
     end
@@ -321,7 +320,6 @@ class NodesController < ApplicationController
     if @node
       if @node.target_platform.blank?
         @node.target_platform = find_default_os
-        @node.save
       end
       intf_if_map = @node.build_node_map
       # build network information (this may need to move into the object)
