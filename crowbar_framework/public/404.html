@@ -36,9 +36,33 @@
         </div>
         <div class="collapse navbar-collapse navbar-right">
           <ul class="nav navbar-nav">
-            <li>
-              <a href="/">Dashboard</a>
+            <li class="active leaf" id="nodes"><a href="/" class="dropdown-toggle active" data-toggle="dropdown">Nodes</a>
+              <ul class="dropdown-menu">
+                <li id="dashboard"><a href="/dashboard">Dashboard</a></li>
+                <li id="list"><a href="/nodes/list?allocated=yes">Bulk Edit</a></li>
+              </ul>
             </li>
+            <li id="network"><a href="/network" class="dropdown-toggle" data-toggle="dropdown">Network</a>
+              <ul class="dropdown-menu">
+                <li id="vlan"><a href="/network/vlan">VLANs</a></li>
+                <li id="switch"><a href="/network/switch">Switches</a></li>
+              </ul>
+            </li>
+            <li id="barclamps"><a href="/crowbar/modules/1.0" class="dropdown-toggle" data-toggle="dropdown">Barclamps</a>
+              <ul class="dropdown-menu">
+                <li id="all_bc"><a href="/crowbar/modules/1.0">All Barclamps</a></li>
+                <li id="crowbar_bc"><a href="/crowbar/crowbar/1.0">Crowbar</a></li>
+                <li id="openstack"><a href="/crowbar/openstack/1.0">OpenStack</a></li>
+              </ul>
+            </li>
+            <li id="utils"><a href="/utils" class="dropdown-toggle" data-toggle="dropdown">Utilities</a>
+              <ul class="dropdown-menu">
+                <li id="ucs_dashboard"><a href="/ucs/edit">Cisco UCS</a></li>
+                <li id="util_logs"><a href="/utils">Exported Items</a></li>
+                <li id="swift"><a href="/swift/dashboard/">Swift Dispersion</a></li>
+              </ul>
+            </li>
+            <li id="help"><a href="/docs">Help</a></li>
           </ul>
         </div>
       </div>
