@@ -36,7 +36,7 @@
                       = link_to t('proposal.actions.edit'), proposal_barclamp_path(:controller=>name, :id=>proposal_name)
               - if barclamp[:allow_multiple_proposals] or barclamp[:proposals].length == 0
                 %tr{:class => ["proposal", cycle(:odd, :even)]}
-                  - form_for :proposal, :remote => true, :url => create_proposal_barclamp_path(:controller => name), :html => { :'data-type' => 'html', :'data-method' => 'put', :method => :put, :class => "formtastic"} do |f|
+                  - form_for :proposal, :remote => true, :url => create_proposal_barclamp_path(:controller => name), :html => { :'data-type' => 'html', :'data-method' => 'put', :method => :put, :class => "formtastic", :autocomplete => "off" } do |f|
                     %td{:style => "text-align:center"} +
                     %td
                       = hidden_field_tag :barclamp, name

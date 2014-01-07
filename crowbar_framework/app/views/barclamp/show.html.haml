@@ -1,15 +1,18 @@
 - prop = "#{@role.barclamp}_#{@role.inst}"
 - barclamp = @role.barclamp
 - role_name = @role.inst
+- catalog = ServiceObject.barclamp_catalog
+- display_name = catalog['barclamps'][barclamp]['display']
+- display_name = barclamp.titlecase if display_name.nil? or display_name == ""
 
 .led.unknown{:id => prop, :title=>t('proposal.status.unknown'), :style=>'float:left;'}
 - if @service_object.simple_proposal_ui? && !Kernel.const_get("#{barclamp.camelize}Service").method(:allow_multiple_proposals?).call
   %h2
-    = link_to "#{@role.barclamp.titlecase}", barclamp_modules_path(:id=>@role.barclamp)
+    = link_to "#{display_name}", barclamp_modules_path(:id=>@role.barclamp)
     = link_to t('.edit'), "/crowbar/#{@role.barclamp}/1.0/proposals/#{@role.inst}", :class => 'btn pull-right'
 - else
   %h2
-    = link_to "#{@role.barclamp.titlecase}: #{@role.inst.titlecase}", barclamp_modules_path(:id=>@role.barclamp)
+    = link_to "#{display_name}: #{@role.inst.titlecase}", barclamp_modules_path(:id=>@role.barclamp)
     = link_to t('.edit'), "/crowbar/#{@role.barclamp}/1.0/proposals/#{@role.inst}", :class => 'btn pull-right'
 
 .box1

@@ -2,20 +2,15 @@
 .led{:id => "head_#{@node.handle}", :class=>"led #{@node.status}", :title=>t(@node.state, :scope=>:state, :default=>@node.state.titlecase), :style=>'float:left; margin-top:5px'}
 .lead{:title=>@node.description}= "#{@node.alias} (#{link_to t('edit'), edit_node_path(@node.handle)})"#.html_safe
 
-%ul.buttons
-  - if @node.bmc_set?
-    %li= link_to "Reboot",   hit_node_path(@node.handle, 'reboot'),   :class => 'btn', :'data-remote' => true, :'data-confirm' => t('are_you_sure')
-    %li= link_to "Shutdown", hit_node_path(@node.handle, 'shutdown'), :class => 'btn', :'data-remote' => true, :'data-confirm' => t('are_you_sure')
-    %li= link_to "Power On", hit_node_path(@node.handle, 'poweron'),  :class => 'btn', :'data-remote' => true, :'data-confirm' => t('are_you_sure')
-    %li= link_to "Identify", hit_node_path(@node.handle, 'identify'), :class => 'btn', :'data-remote' => true
 .row
   .span6
     %dl
       = dl_item(t('model.attributes.node.name'), @node.name)
       = dl_item(t('model.attributes.node.public_name'), (@node.public_name.nil? ? "-" : @node.public_name))
       = dl_item(t('model.attributes.node.description'), @node.description || t('model.attributes.node.description_not_set'))
-      = dl_item(t('model.attributes.node.target_platform'), @node.target_platform ? @node.target_platform : t('model.attributes.node.target_platform_not_set'))
-      = dl_item(t('model.attributes.node.license_key'), @node.license_key ? @node.license_key : t('model.attributes.node.license_key_not_set'))
+      = dl_item(t('model.attributes.node.target_platform'), !@node.target_platform.blank? ? @node.pretty_target_platform : t('model.attributes.node.target_platform_not_set'))
+      -if CrowbarService.require_license_key?(@node.target_platform)
+        = dl_item(t('model.attributes.node.license_key'), !@node.license_key.blank? ? @node.license_key : t('model.attributes.node.license_key_not_set'))
       = dl_item(t('model.attributes.node.uptime'), (@node.ready? ? @node.uptime : t('model.attributes.node.na')))
       = dl_item(t('model.attributes.node.allocated'), (@node.allocated ? t('.active') : t('.inactive')))
       = dl_item(t('model.attributes.node.state'), t(@node.state, :scope => :state, :default=>@node.state.titlecase), {:class=>"node_state", :title=>"#{t('raw')}: #{@node.state}"})
@@ -50,19 +45,26 @@
     - if @node.bmc_set?
       = link_to t('.bmc'), "https://#{@node["crowbar_wall"]["ipmi"]["address"] rescue 'none'}", :target => '_blank'
       - need_sep = true
-    - unless @node["crowbar"]["links"].nil?
+    - unless @node["crowbar"]["links"].nil? || @node["crowbar"]["links"].empty?
       - @node["crowbar"]["links"].each do |name,link|
         - if need_sep
           ,
         - else
           - need_sep = true
         = link_to name, link, :target => '_blank'
+    - else
+      = t('.no_links')
 
-%dl.barclamps
-  = dl_item(t('model.attributes.node.barclamps'), barclamps_list(@node.roles), {:escape_html=>false})
-
-%dl.roles
-  = dl_item(t('model.attributes.node.roles'), roles_list(@node.roles), {:escape_html=>false})
+%div{:class => "pull-right"}
+  - unless @node.admin?
+    - if @node.bmc_set?
+      = link_to "Identify", hit_node_path(@node.handle, 'identify'), :class => 'btn', :'data-remote' => true
+      = link_to "Power On", hit_node_path(@node.handle, 'poweron'),  :class => 'btn', :'data-remote' => true, :'data-confirm' => t('are_you_sure')
+    = link_to "Reboot",   hit_node_path(@node.handle, 'reboot'),   :class => 'btn', :'data-remote' => true, :'data-confirm' => t('are_you_sure')
+    = link_to "Shutdown", hit_node_path(@node.handle, 'shutdown'), :class => 'btn', :'data-remote' => true, :'data-confirm' => t('are_you_sure')
+  - else
+    - if @node.bmc_set?
+      = link_to "Identify", hit_node_path(@node.handle, 'identify'), :class => 'btn', :'data-remote' => true
 
 %form.form-inline
   - unless @node.admin?

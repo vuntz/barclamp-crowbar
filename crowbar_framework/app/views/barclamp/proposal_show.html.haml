@@ -1,6 +1,9 @@
 - prop = "#{@proposal.barclamp}_#{@proposal.name}"
 - barclamp = @proposal.barclamp
 - role_name = @proposal.name
+- catalog = ServiceObject.barclamp_catalog
+- display_name = catalog['barclamps'][barclamp]['display']
+- display_name = barclamp.titlecase if display_name.nil? or display_name == ""
 
 %h2.page-header
   .led.div-center.unknown{:id => prop, :title=>t('proposal.status.unknown'), :style=>'float:left'}
@@ -9,7 +12,7 @@
     = link_to t('cancel'), barclamp_modules_path(:id=>@proposal.barclamp), :class => 'btn'
 .page-header-bottom
 -# Rails 2 needs - and Rails 3 needs =
-- form_for :proposal, :url => update_proposal_barclamp_path(:id => @proposal.name, :controller => @proposal.barclamp), :html => { :method => :post, :'data-type' => 'html', :id => 'update_proposal_form', :class => "box1" } do |f|
+- form_for :proposal, :url => update_proposal_barclamp_path(:id => @proposal.name, :controller => @proposal.barclamp), :html => { :method => :post, :'data-type' => 'html', :id => 'update_proposal_form', :class => "box1", :autocomplete => "off" } do |f|
   .pull-right
     - if @proposal["deployment"][@proposal.barclamp]["crowbar-committing"].nil? or !@proposal["deployment"][@proposal.barclamp]["crowbar-committing"]
       - if @active
