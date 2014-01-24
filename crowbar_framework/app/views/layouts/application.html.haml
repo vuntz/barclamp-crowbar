@@ -20,6 +20,8 @@
       = stylesheet_tag "ie"
       = javascript_tag "ie"
 
+    %link{:href => image_path("suse/favicon.ico"), :rel => "shortcut icon"}
+  
   %body{ :class => params[:controller] }
     = render :partial => "shared/header"
 
