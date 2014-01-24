@@ -28,18 +28,18 @@ use_bundler: false
 branding:
   # The main page title that gets displayed on all pages on the top bar and within
   # the meta information.
-  page_title: 'Crowbar'
+  page_title: 'SUSE Cloud'
 
   # The page slogan is an optional value. If you don't define it nothings gets
   # printed out. If you define it, it gets printed as a suffix for the page title.
-  page_slogan: ''
+  page_slogan: 'Crowbar'
 
   # This configuration entry can get used to customize the version name output.
   # SUSE Cloud for example should write something like SUSE Cloud v2.0, whereas
   # Crowbar on Dell side writes Version 0.0.1. The variable CROWBAR_VERSION gets
   # replaced by the constant value.
-  version: 'Version CROWBAR_VERSION'
+  version: '<a href="https://www.suse.com/products/suse-cloud/" target="_new">SUSE Cloud v3</a>'
 
   # The provider will get displayed on the footer of crowbar to show who provides
   # this nice project ;-)
-  provider: '<a href="http://dell.com/cloud" target="_blank"><img src="/assets/dell/dell.png" alt="Dell, Inc." /> CloudEdge Solutions team</a>'
+  provider: '<a href="http://www.suse.com" target="_new">SUSE</a>'
