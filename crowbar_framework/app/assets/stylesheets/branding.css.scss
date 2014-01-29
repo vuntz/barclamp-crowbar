@@ -1,25 +1,55 @@
-.title { font-size: 21px; }
-.navbar-brand { padding: 15px 15px 12px; }
-.proposal table tr td { background-color: #fff }
-.panel-heading { padding-bottom: 15px }
-.page-header { border: none }
-.dropdown-menu {  
-  border-radius: 6px;
-  border: 1px solid rgba(0,0,0,0.2);
-  right: -1px !important;
+.navbar-inverse {
+  .navbar-brand {
+    padding: 15px 15px 12px;
+
+    .title {
+      font-size: 21px;
+    }
+  }
+
+  .navbar-nav > .open > a {
+    background-color: #25282a !important;
+    box-shadow: 1px 1px 0 rgba(0,0,0,0.4) inset,1px 1px 0 rgba(255,255,255,0.1);
+  }
+
+  .navbar-nav {
+    .dropdown-menu {
+      border-radius: 0 0 6px 6px;
+      border: 1px solid rgba(0,0,0,0.2);
+      right: -1px !important;
+
+      & > li > a {
+        padding: 3px 10px;
+        margin: 0px 5px;
+      }
+
+      li a:hover {
+        border-radius: 3px;
+        box-shadow: 1px 1px 0 rgba(0,0,0,0.4) inset,1px 1px 0 rgba(255,255,255,0.1);
+        background-color: #2e3235 !important;
+      }
+    }
+  }
 }
 
-.dropdown-menu > li > a {  
-  padding: 3px 10px;
-  margin: 0px 5px;
-}
-.dropdown-menu li a:hover {
-  border-radius: 3px;
-  box-shadow: 1px 1px 0 rgba(0,0,0,0.4) inset,1px 1px 0 rgba(255,255,255,0.1);
-  background-color: #2e3235 !important;
+.page-header {
+  border: none;
 }
 
-.navbar-inverse .navbar-nav > .open > a {
-  background-color: #25282a !important;
-  box-shadow: 1px 1px 0 rgba(0,0,0,0.4) inset,1px 1px 0 rgba(255,255,255,0.1);
+.panel {
+  .panel-heading {
+    h2 {
+      padding: 5px 0;
+
+      .btn-group {
+        margin: -5px 0;
+      }
+    }
+  }
+}
+
+.proposal {
+  table tr td {
+    background-color: #fff
+  }
 }

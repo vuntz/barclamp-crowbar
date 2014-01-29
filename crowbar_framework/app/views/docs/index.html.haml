@@ -3,24 +3,31 @@
     %h1.page-header
       = t(".title")
 
-%p= t('.deployment_guide')
-.row
-  .span12
-    %ul
-      %li
-        = link_to t('nav.crowbar_dg'), 'docs/html/book.cloud.deploy.html'
-        = surround '(', ')' do
-          = link_to t('.pdf'), 'docs/susecloud-deployment_en.pdf'
-%p= t('.susecloud_guides')
-.row
-  .span12
-    %ul
-      %li
-        = link_to t('nav.crowbar_ug'), 'docs/html/book.cloud.user.html'
-        = surround '(', ')' do
-          = link_to t('.pdf'), 'docs/susecloud-user_en.pdf'
-      %li
-        = link_to t('nav.crowbar_ag'), 'docs/html/book.cloud.admin.html'
-        = surround '(', ')' do
-          = link_to t('.pdf'), 'docs/susecloud-admin_en.pdf'
-%p= t('.online', :url => 'http://crowbar.github.io')
+.panel.panel-default
+  .panel-heading
+    %h2
+      = t('.deployment_guide')
+
+  %ul.list-group
+    %li.list-group-item
+      = link_to t('nav.crowbar_dg'), 'docs/html/book.cloud.deploy.html', :target => "_blank"
+      = surround '(', ')' do
+        = link_to t('.pdf'), 'docs/susecloud-deployment_en.pdf', :target => "_blank"
+
+  .panel-heading
+    %h2
+      = t('.susecloud_guides')
+
+  %ul.list-group
+    %li.list-group-item
+      = link_to t('nav.crowbar_ug'), 'docs/html/book.cloud.user.html', :target => "_blank"
+      = surround '(', ')' do
+        = link_to t('.pdf'), 'docs/susecloud-user_en.pdf', :target => "_blank"
+
+    %li.list-group-item
+      = link_to t('nav.crowbar_ag'), 'docs/html/book.cloud.admin.html', :target => "_blank"
+      = surround '(', ')' do
+        = link_to t('.pdf'), 'docs/susecloud-admin_en.pdf', :target => "_blank"
+
+    %li.list-group-item
+      = t('.online', :url => 'http://crowbar.github.io')
