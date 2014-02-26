@@ -174,6 +174,7 @@ class ServiceObject
 
      items.each |item| do
        unless item.start_with? "cluster:"
+         # TODO: magic here!
        else
          nodes << item
        end
