@@ -168,13 +168,34 @@ class ServiceObject
 # Helper routines for queuing
 #
 
+  def pacemaker_clusters
+    @@pacemaker_clusters ||= begin
+      clusters = {}
+      RoleObject.active("pacemaker").each |role| do
+        clusters[role.inst] = role
+      end
+      clusters
+    end
+  end
+
   def expand_nodes(items)
      nodes = []
      failures = []
 
+     clusters = pacemaker_clusters
+
      items.each |item| do
        unless item.start_with? "cluster:"
-         # TODO: magic here!
+         # vuntz HA: TODO we probably should move this in pacemaker_service.rb and call it from here
+         cluster_name = item.gsub("cluster:", "")
+         if clusters[cluster_name].nil?
+           failures << item
+         else
+           %w(pacemaker-cluster-founder pacemaker-cluster-member).each |role_name| do
+             cluster_nodes = clusters[cluster_name].override_attributes["pacemaker"]["elements"][role_name] rescue []
+             nodes = nodes.concat(cluster_nodes)
+           end
+         end
        else
          nodes << item
        end
