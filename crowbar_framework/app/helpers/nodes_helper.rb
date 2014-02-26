@@ -79,6 +79,7 @@ module NodesHelper
   end
 
   def node_links_for(value)
+# vuntz HA: need to know about clusters here
     node_list_for(value).map do |name, node|
       link_to node[:alias], nodes_path(:selected => node[:handle]), :title => node[:title]
     end

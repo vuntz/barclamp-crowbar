@@ -612,6 +612,7 @@ class ServiceObject
   end
 
   def element_info
+# vuntz HA: need to add clusters if the requested role supports HA clusters
     nodes = NodeObject.find_all_nodes
     nodes.map! { |n| n.name } unless nodes.empty?
     [200, nodes]
