@@ -168,10 +168,29 @@ class ServiceObject
 # Helper routines for queuing
 #
 
+  def expand_nodes(items)
+     nodes = []
+     failures = []
+
+     items.each |item| do
+       unless item.start_with? "cluster:"
+       else
+         nodes << item
+       end
+     end
+
+     [nodes, failures]
+  end
+
   # Create map with nodes and their element list
   def elements_to_nodes_to_roles_map(elements)
     nodes_map = {}
     elements.each do |role_name, nodes|
+      nodes, failures = expand_nodes(nodes)
+      unless failures.nil? || failures.empty?
+        @logger.debug "elements_to_nodes_to_roles_map: skipping items that we failed to expand: #{failures.join(", ")}"
+      end
+
       nodes.each do |node_name|
         if NodeObject.find_node_by_name(node_name).nil?
           @logger.debug "elements_to_nodes_to_roles_map: skipping deleted node #{node_name}"
@@ -919,13 +938,38 @@ class ServiceObject
 
     @logger.debug "delay empty - running proposal"
 
+    # expand items in elements that are not nodes
+    expanded_new_elements = {}
+    new_deployment["elements"].each |role_name, nodes| do
+      expanded_new_elements[role_name], failures = expand_nodes(nodes)
+      unless failures.nil? || failures.empty?
+        @logger.fatal("apply_role: Failed to expand items #{failures.inspect} for role \"#{role_name}\"")
+        message = "Failed to apply the proposal: cannot expand list of nodes for role \"#{role_name}\", following items do not exist: #{failures.join(", ")}"
+        update_proposal_status(inst, "failed", message)
+        process_queue unless in_queue
+        return [ 405, message ]
+      end
+    end
+    new_elements = expanded_new_elements
+
+    # save list of expanded elements, as this is needed when we look at the
+    # old role
+    if new_elements != new_deployment["elements"]
+      new_deployment["elements_expanded"] = new_elements
+    end
+
     # make sure the role is saved
     role.save
 
     # Build a list of old elements
     old_elements = {}
     old_deployment = old_role.override_attributes[@bc_name] unless old_role.nil?
-    old_elements = old_deployment["elements"] unless old_deployment.nil?
+    unless old_deployment.nil?
+      old_elements = old_deployment["elements_expanded"]
+      if old_elements.nil?
+        old_elements = old_deployment["elements"]
+      end
+    end
     element_order = old_deployment["element_order"] if (!old_deployment.nil? and element_order.nil?)
 
     @logger.debug "old_deployment #{old_deployment.pretty_inspect}"
