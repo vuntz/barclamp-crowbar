@@ -38,7 +38,7 @@ branding:
   # SUSE Cloud for example should write something like SUSE Cloud v2.0, whereas
   # Crowbar on Dell side writes Version 0.0.1. The variable CROWBAR_VERSION gets
   # replaced by the constant value.
-  version: '<a href="https://www.suse.com/products/suse-cloud/" target="_new">SUSE Cloud v3</a>'
+  version: '<a href="https://www.suse.com/products/suse-cloud/" target="_new">SUSE Cloud 4</a>'
 
   # The provider will get displayed on the footer of crowbar to show who provides
   # this nice project ;-)
