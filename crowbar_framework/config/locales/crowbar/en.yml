@@ -199,9 +199,9 @@ en:
       deployment_guide: 'Refer to the following deployment guide for details on Crowbar'
       susecloud_guides: 'Additional SUSE Cloud specific guides that may be useful'
       online: |
-        'You can find additional up-to-date information about Crowbar on
+        You can find additional up-to-date information about Crowbar on
         the <a href='%{url}' target='_blank'>project webpage</a>, but do note
-        that it may be for a different version.'
+        that it may be for a different version.
 
   model:
     node:
