@@ -1,17 +1,19 @@
-# Copyright 2011, Dell
+#
+# Copyright 2011-2013, Dell
+# Copyright 2013-2014, SUSE LINUX Products GmbH
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#  http://www.apache.org/licenses/LICENSE-2.0
+#   http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-# 
+#
 
 require 'rubygems'
 require 'net/http'
@@ -22,8 +24,6 @@ require 'getoptlong'
 
 @debug = false
 @hostname = ENV["CROWBAR_IP"] 
-# DO NOT CHANGE THE NEXT 2 LINES
-# gather_cli replies on the exact format they are in. 
 @hostname = "127.0.0.1" unless @hostname
 @port = 3000
 @headers = {
@@ -33,11 +33,7 @@ require 'getoptlong'
 @data = ""
 @allow_zero_args = false
 @timeout = 500
-@key = ENV["CROWBAR_KEY"]
-if @key
-  @username=@key.split(':',2)[0]
-  @password=@key.split(':',2)[1]
-end
+@crowbar_key_file = '/etc/crowbar.install.key'
 
 #
 # Parsing options can be added by adding to this list before calling opt_parse
@@ -435,6 +431,19 @@ end
 ### Start MAIN ###
 
 def opt_parse()
+  key = ENV["CROWBAR_KEY"]
+  if key.nil? and ::File.exists?(@crowbar_key_file) and ::File.readable?(@crowbar_key_file)
+    begin
+      key = File.read(@crowbar_key_file).strip
+    rescue => e
+      warn "Unable to read crowbar key from #{@crowbar_key_file}: #{e}"
+    end
+  end
+
+  if key
+    @username, @password = key.split(":",2)
+  end
+
   sub_options = @options.map { |x| x[0] }
   lsub_options = @options.map { |x| [ x[0][0], x[2] ] }
   opts = GetoptLong.new(*sub_options)
@@ -474,8 +483,11 @@ def opt_parse()
     usage -1
   end
 
-  STDERR.puts "CROWBAR_KEY not set, will not be able to authenticate!" if @username.nil? or @password.nil?
-  STDERR.puts "Please set CROWBAR_KEY or use -U and -P" if @username.nil? or @password.nil?
+  if @username.nil? or @password.nil?
+    STDERR.puts "CROWBAR_KEY not set, will not be able to authenticate!"
+    STDERR.puts "Please set CROWBAR_KEY or use -U and -P"
+    exit 1
+  end
 end
 
 def run_sub_command(cmds, subcmd)
