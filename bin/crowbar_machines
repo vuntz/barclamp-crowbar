@@ -61,6 +61,8 @@ require "utils/extended_hash"
   "delete" => [ "delete ARGV.shift", "delete <name or alias> - Delete a node" ],
   "reboot" => [ "action \"reboot\", ARGV.shift", "reboot <name or alias> - Reboot a node" ],
   "shutdown" => [ "action \"shutdown\", ARGV.shift", "shutdown <name or alias> - Shutdown a node" ],
+  "hardreboot" => [ "action \"hardreboot\", ARGV.shift", "hardreboot <name or alias> - Hard reboot a node" ],
+  "hardshutdown" => [ "action \"hardshutdown\", ARGV.shift", "hardshutdown <name or alias> - Hard shutdown a node" ],
   "poweron" => [ "action \"poweron\", ARGV.shift", "poweron <name or alias> - Poweron a node" ],
   "identify" => [ "action \"identify\", ARGV.shift", "identify <name or alias> - Identify a node" ],
   "allocate" => [ "action \"allocate\", ARGV.shift", "allocate <name or alias> - Allocate a node" ],

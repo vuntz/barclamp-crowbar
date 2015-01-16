@@ -32,6 +32,8 @@ class MachinesController < BarclampController
       :reset,
       :shutdown,
       :reboot,
+      :hardshutdown,
+      :hardreboot,
       :poweron,
       :allocate
     ]
@@ -111,6 +113,8 @@ class MachinesController < BarclampController
     :reset,
     :shutdown,
     :reboot,
+    :hardshutdown,
+    :hardreboot,
     :poweron,
     :allocate
   ].each do |action|

@@ -1207,6 +1207,16 @@ class NodeObject < ChefObject
     ssh_cmd("/sbin/poweroff")
   end
 
+  def hardreboot
+    set_state("reboot")
+    bmc_cmd("power cycle")
+  end
+
+  def hardshutdown
+    set_state("shutdown")
+    bmc_cmd("power off")
+  end
+
   def poweron
     set_state("poweron")
     bmc_cmd("power on")

@@ -166,6 +166,8 @@ describe MachinesController do
     :identify,
     :shutdown,
     :reboot,
+    :hardshutdown,
+    :hardreboot,
     :poweron,
     :allocate
   ].each do |action|

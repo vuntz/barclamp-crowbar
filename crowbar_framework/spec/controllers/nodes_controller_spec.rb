@@ -216,7 +216,7 @@ describe NodesController do
         post :hit, :req => action, :id => "testing"
       end
 
-      ["reboot", "shutdown", "poweron", "identify", "allocate"].each do |action|
+      ["reboot", "shutdown", "hardreboot", "hardshutdown", "poweron", "identify", "allocate"].each do |action|
         NodeObject.any_instance.expects(action.to_sym).once
         post :hit, :req => action, :id => "testing"
       end
