@@ -1,7 +1,4 @@
 - if @node.bmc_set?
-  - unless @node.admin?
-    = link_to t(".poweron"), hit_node_path(@node.handle, "poweron"), class: "btn btn-default", remote: true, confirm: t("are_you_sure")
-
   = link_to t(".identify"), hit_node_path(@node.handle, "identify"), class: "btn btn-default", remote: true
 
 - unless @node.admin?
@@ -20,3 +17,8 @@
       = link_to t(".hardreboot"), hit_node_path(@node.handle, "hardreboot"), role: "menuitem", remote: true
     %li{ role: "presentation" }
       = link_to t(".hardshutdown"), hit_node_path(@node.handle, "hardshutdown"), role: "menuitem", remote: true
+
+    - if @node.bmc_set?
+      %li.divider{ role: "presentation" }
+      %li{ role: "presentation" }
+        = link_to t(".poweron"), hit_node_path(@node.handle, "poweron"), role: "menuitem", remote: true, "data-confirm" => t("are_you_sure")
