@@ -82,9 +82,6 @@ else
   gem "syslogger", version: "~> 1.6"
   require "syslogger"
 
-  gem "uglifier", "~> 2.2"
-  require "uglifier"
-
   # chef related
   gem "mixlib-shellout", version: "~> 1.4"
   require "mixlib/shellout"
