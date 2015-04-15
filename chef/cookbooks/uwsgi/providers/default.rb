@@ -4,11 +4,10 @@ action :enable do
   package "python-pip"
   package "python-dev"
 
-  provisioner = search(:node, "roles:provisioner-server").first
-  proxy_addr = provisioner[:fqdn]
-  proxy_port = provisioner[:provisioner][:web_port]
+  provisioner_settings = CrowbarConfig.fetch("core", "provisioner")
+  provisioner_url = "#{provisioner_settings["web"]["protocol"]}://#{provisioner_settings["web"]["host"]}:#{provisioner_settings["web"]["port"]}"
 
-  execute "pip install --index-url http://#{proxy_addr}:#{proxy_port}/files/pip_cache/simple/ uwsgi" do
+  execute "pip install --index-url #{provisioner_url}/files/pip_cache/simple/ uwsgi" do
     not_if "pip freeze 2>&1 | grep -i uwsgi"
   end
 
