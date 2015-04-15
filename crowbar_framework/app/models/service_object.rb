@@ -1285,6 +1285,7 @@ class ServiceObject
     end
 
     begin
+      export_to_deployment_config(role)
       apply_role_pre_chef_call(old_role, role, all_nodes)
     rescue StandardError => e
       @logger.fatal("apply_role: Exception #{e.message} #{e.backtrace.join("\n")}")
@@ -1416,6 +1417,10 @@ class ServiceObject
     restore_to_ready(all_nodes)
     process_queue unless in_queue
     [200, {}]
+  end
+
+  def export_to_deployment_config(role)
+    # noop by default.
   end
 
   def apply_role_pre_chef_call(old_role, role, all_nodes)
