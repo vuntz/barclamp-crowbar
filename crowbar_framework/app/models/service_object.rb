@@ -1285,8 +1285,11 @@ class ServiceObject
     end
 
     begin
-      export_to_deployment_config(role)
       apply_role_pre_chef_call(old_role, role, all_nodes)
+      # Careful: run export_to_deployment_config after apply_role_pre_chef_call
+      # as the latter might change some settings (like allocating addresses for
+      # nodes)
+      export_to_deployment_config(role)
     rescue StandardError => e
       @logger.fatal("apply_role: Exception #{e.message} #{e.backtrace.join("\n")}")
       message = "Failed to apply the proposal: exception before calling chef (#{e.message})"
