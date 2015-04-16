@@ -16,15 +16,29 @@
 
 module CrowbarConfig
   def self.fetch(name, category)
+    db = self.load(name)
+    db.fetch(category, {})
+  end
+
+  protected
+
+  def self.load_no_cache(name)
     begin
-      db = Chef::DataBagItem.load('crowbar', name).raw_data
-      db.fetch(category, {})
+      Chef::DataBagItem.load('crowbar', name).raw_data
     rescue Net::HTTPServerException => e
-      if e.message == '404 "Not Found"'
+      if e.response.code == 404
         {}
       else
         raise e
       end
     end
+  end
+
+  def self.load(name)
+    unless @dbs && @dbs.include?(name)
+      @dbs ||= Hash.new
+      @dbs[name] = self.load_no_cache(name)
+    end
+    @dbs[name]
   end
 end
