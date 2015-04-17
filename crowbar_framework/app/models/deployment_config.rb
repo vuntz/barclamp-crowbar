@@ -35,6 +35,10 @@ class DeploymentConfig
     @category = category
   end
 
+  def set(config)
+    @store[@category] = config
+  end
+
   def [](attrib)
     @store.fetch(@category, {})[attrib]
   end
