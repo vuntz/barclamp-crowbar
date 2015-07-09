@@ -1263,7 +1263,10 @@ class ServiceObject
     admin_nodes = []
     pending_node_actions.each do |node_name, lists|
       node = pre_cached_nodes[node_name]
-      node = NodeObject.find_node_by_name(node_name) if node.nil?
+      if node.nil?
+        node = NodeObject.find_node_by_name(node_name)
+        pre_cached_nodes[node_name] = node
+      end
       next if node.nil?
 
       admin_nodes << node_name if node.admin?
