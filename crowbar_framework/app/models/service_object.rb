@@ -1202,11 +1202,15 @@ class ServiceObject
           elem_remove = tmprole.name unless tmprole.nil?
 
           old_nodes.each do |node_name|
+            node = NodeObject.find_node_by_name(node_name)
+
             # Don't add deleted nodes to the run order
-            if NodeObject.find_node_by_name(node_name).nil?
+            if node.nil?
               @logger.debug "skipping deleted node #{node_name}"
               next
             end
+
+            pre_cached_nodes[node_name] = node
 
             unless new_nodes.include?(node_name)
               @logger.debug "remove node #{node_name}"
@@ -1235,11 +1239,15 @@ class ServiceObject
 
         unless new_nodes.empty?
           new_nodes.each do |node_name|
+            node = NodeObject.find_node_by_name(node_name)
+
             # Don't add deleted nodes to the run order
-            if NodeObject.find_node_by_name(node_name).nil?
+            if node.nil?
               @logger.debug "skipping deleted node #{node_name}"
               next
             end
+
+            pre_cached_nodes[node_name] = node
 
             all_nodes << node_name unless all_nodes.include?(node_name)
             unless old_nodes.include?(node_name)
@@ -1360,7 +1368,7 @@ class ServiceObject
       pids = {}
       unless non_admin_nodes.empty?
         non_admin_nodes.each do |node|
-          nobj = NodeObject.find_node_by_name(node)
+          nobj = pre_cached_nodes[node] || NodeObject.find_node_by_name(node)
           unless nobj[:platform] == "windows"
             filename = "#{ENV['CROWBAR_LOG_DIR']}/chef-client/#{node}.log"
             pid = run_remote_chef_client(node, "chef-client", filename)
