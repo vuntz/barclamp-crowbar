@@ -1222,8 +1222,8 @@ class ServiceObject
                 # an earlier code, but apply_role didn't fully complete. We
                 # will remove the intention after a successful apply_role.
                 databag["deployment"][@bc_name]["elements"][elem_remove] ||= []
-                unless databag["deployment"][@bc_name]["elements"][elem_remove].include? old_node
-                  databag["deployment"][@bc_name]["elements"][elem_remove] << old_node
+                unless databag["deployment"][@bc_name]["elements"][elem_remove].include? node_name
+                  databag["deployment"][@bc_name]["elements"][elem_remove] << node_name
                   save_databag ||= true
                 end
               end
