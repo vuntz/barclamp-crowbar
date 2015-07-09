@@ -206,16 +206,7 @@ class ServiceObject
       end
 
       # Add the entries to the nodes.
-      if delay.empty?
-        nodes_map.each do |node_name, val|
-          node = pre_cached_nodes[node_name]
-
-          # Nothing to delay so mark them applying.
-          node.crowbar['state'] = 'applying'
-          node.crowbar['state_owner'] = "#{bc}-#{inst}"
-          node.save
-        end
-      else
+      unless delay.empty?
         nodes_map.each do |node_name, val|
           # Make sure we have a node.
           node = pre_cached_nodes[node_name]
@@ -258,6 +249,22 @@ class ServiceObject
     end
   end
 
+  def set_to_applying(nodes, inst)
+    f = acquire_lock "BA-LOCK"
+    begin
+      nodes.each do |node_name|
+        node = NodeObject.find_node_by_name(node_name)
+        next if node.nil?
+
+        node.crowbar['state'] = 'applying'
+        node.crowbar['state_owner'] = "#{@bc_name}-#{inst}"
+        node.save
+      end
+    ensure
+      release_lock f
+    end
+  end
+
   def restore_to_ready(nodes)
     f = acquire_lock "BA-LOCK"
     begin
@@ -265,7 +272,6 @@ class ServiceObject
         node = NodeObject.find_node_by_name(node_name)
         next if node.nil?
 
-        # Nothing to delay so mark them applying.
         node.crowbar['state'] = 'ready'
         node.crowbar['state_owner'] = ""
         node.save
@@ -1271,6 +1277,11 @@ class ServiceObject
     # save databag with the role removal intention
     databag.save if save_databag
 
+    # mark nodes as applying; beware that all_nodes do not contain nodes that
+    # are actually removed
+    applying_nodes = run_order.flatten
+    set_to_applying(applying_nodes, inst)
+
     @logger.debug "Clean the run_lists for #{pending_node_actions.inspect}"
     admin_nodes = []
     pending_node_actions.each do |node_name, lists|
@@ -1336,7 +1347,7 @@ class ServiceObject
       @logger.fatal("apply_role: Exception #{e.message} #{e.backtrace.join("\n")}")
       message = "Failed to apply the proposal: exception before calling chef (#{e.message})"
       update_proposal_status(inst, "failed", message)
-      restore_to_ready(all_nodes)
+      restore_to_ready(applying_nodes)
       process_queue unless in_queue
       return [ 405, message ]
     end
@@ -1401,7 +1412,7 @@ class ServiceObject
               message = message + "#{pids[baddie[0]]} \n"+ get_log_lines("#{pids[baddie[0]]}")
             end
             update_proposal_status(inst, "failed", message)
-            restore_to_ready(all_nodes)
+            restore_to_ready(applying_nodes)
             process_queue unless in_queue
             return [ 405, message ]
           end
@@ -1436,7 +1447,7 @@ class ServiceObject
               message = message + "#{pids[baddie[0]]} \n "+ get_log_lines("#{pids[baddie[0]]}")
             end
             update_proposal_status(inst, "failed", message)
-            restore_to_ready(all_nodes)
+            restore_to_ready(applying_nodes)
             process_queue unless in_queue
             return [ 405, message ]
           end
@@ -1477,13 +1488,13 @@ class ServiceObject
       @logger.fatal("apply_role: Exception #{e.message} #{e.backtrace.join("\n")}")
       message = "Failed to apply the proposal: exception after calling chef (#{e.message})"
       update_proposal_status(inst, "failed", message)
-      restore_to_ready(all_nodes)
+      restore_to_ready(applying_nodes)
       process_queue unless in_queue
       return [ 405, message ]
     end
 
     update_proposal_status(inst, "success", "")
-    restore_to_ready(all_nodes)
+    restore_to_ready(applying_nodes)
     process_queue unless in_queue
     [200, {}]
   ensure
