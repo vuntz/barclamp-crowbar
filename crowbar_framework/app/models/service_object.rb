@@ -1201,11 +1201,15 @@ class ServiceObject
         @logger.debug "old_nodes #{old_nodes.inspect}"
         @logger.debug "new_nodes #{new_nodes.inspect}"
 
-        unless old_nodes.empty?
-          elem_remove = nil
-          tmprole = RoleObject.find_role_by_name "#{role_name}_remove"
-          elem_remove = tmprole.name unless tmprole.nil?
+        remove_role_name = "#{role_name}_remove"
+        tmprole = RoleObject.find_role_by_name remove_role_name
+        use_remove_role = !tmprole.nil?
 
+        # Also act on nodes that were to be removed last time, but couldn't due
+        # to possibly some error on last application
+        old_nodes += (databag["deployment"][@bc_name]["elements"].delete(remove_role_name) || [])
+
+        unless old_nodes.empty?
           old_nodes.each do |node_name|
             node = NodeObject.find_node_by_name(node_name)
 
@@ -1222,19 +1226,14 @@ class ServiceObject
               pending_node_actions[node_name] = { :remove => [], :add => [] } if pending_node_actions[node_name].nil?
               pending_node_actions[node_name][:remove] << role_name
 
-              unless elem_remove.nil?
-                pending_node_actions[node_name][:add] << elem_remove
+              if use_remove_role
+                pending_node_actions[node_name][:add] << remove_role_name
 
-                # Save remove intention in #{@bc_name}-databag; note that we
-                # keep the previous value that was before the call to this
-                # method on purpose: this can happen if a node got removed in
-                # an earlier code, but apply_role didn't fully complete. We
-                # will remove the intention after a successful apply_role.
-                databag["deployment"][@bc_name]["elements"][elem_remove] ||= []
-                unless databag["deployment"][@bc_name]["elements"][elem_remove].include? node_name
-                  databag["deployment"][@bc_name]["elements"][elem_remove] << node_name
-                  save_databag ||= true
-                end
+                # Save remove intention in #{@bc_name}-databag; we will remove
+                # the intention after a successful apply_role.
+                databag["deployment"][@bc_name]["elements"][remove_role_name] ||= []
+                databag["deployment"][@bc_name]["elements"][remove_role_name] << node_name
+                save_databag ||= true
               end
 
               nodes_in_batch << node_name unless nodes_in_batch.include?(node_name)
