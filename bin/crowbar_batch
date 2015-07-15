@@ -25,7 +25,13 @@
 #       - SSL yes or no
 #       - different neutron backend
 
-$LOAD_PATH.unshift(File.expand_path("../../crowbar_framework/lib", __FILE__))
+rails_roots = ["/srv/www/crowbar", "/opt/dell/crowbar_framework", "../../crowbar_framework"]
+rails_roots = rails_roots.map { |dir| File.expand_path(dir, __FILE__) }
+rails_root = rails_roots.find { |dir| File.directory?(dir) }
+
+raise "Cannot find directory of Crowbar Rails application." if rails_root.nil?
+
+$LOAD_PATH.unshift("#{rails_root}/lib")
 
 require File.join(File.expand_path(File.dirname(__FILE__)), "barclamp_lib")
 
@@ -442,7 +448,7 @@ def load_chef_module
   require "chef"
 
   Chef::Config.node_name "crowbar"
-  Chef::Config.client_key "/opt/dell/crowbar_framework/config/client.pem"
+  Chef::Config.client_key "#{rails_root}/config/client.pem"
   Chef::Config.chef_server_url "http://localhost:4000"
   Chef::Config.http_retry_count 3
 end

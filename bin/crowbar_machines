@@ -16,7 +16,13 @@
 # limitations under the License.
 #
 
-$LOAD_PATH.unshift(File.expand_path("../../crowbar_framework/lib", __FILE__))
+rails_roots = ["/srv/www/crowbar", "/opt/dell/crowbar_framework", "../../crowbar_framework"]
+rails_roots = rails_roots.map { |dir| File.expand_path(dir, __FILE__) }
+rails_root = rails_roots.find { |dir| File.directory?(dir) }
+
+raise "Cannot find directory of Crowbar Rails application." if rails_root.nil?
+
+$LOAD_PATH.unshift("#{rails_root}/lib")
 
 require "rubygems"
 require "net/http"
