@@ -3,7 +3,7 @@ Bluepill.application("crowbar-webserver") do |app|
     p.name = "rainbows"
     p.start_command = "/usr/bin/env HOME=<%= @crowbar_home %> rainbows -E production -c rainbows.cfg"
     p.stdout = p.stderr = "<%= "#{@logdir}/production.out" %>"
-    p.working_dir = "/opt/dell/crowbar_framework"
+    p.working_dir = "<%= @rails_root %>"
     p.uid = "crowbar"
     p.gid = "crowbar"
     p.daemonize = true

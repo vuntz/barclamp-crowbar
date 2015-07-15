@@ -16,6 +16,7 @@
 # Default path variables.
 #
 
+<% if @use_opt -%>
 # Make sure /opt/dell/bin is in the root path
 if ! echo ${PATH} | /bin/grep -q /opt/dell/bin ; then
         if [ `/usr/bin/id -u` = 0 ] ; then
@@ -23,6 +24,7 @@ if ! echo ${PATH} | /bin/grep -q /opt/dell/bin ; then
         fi
 fi
 
+<% end -%>
 if [ -f /etc/crowbar.install.key ] ; then
     export CROWBAR_KEY=`cat /etc/crowbar.install.key`
 fi

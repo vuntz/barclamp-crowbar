@@ -26,6 +26,11 @@ rainbows_path = ""
 logdir = "/var/log/crowbar"
 crowbar_home = "/home/crowbar"
 
+rails_roots = ["/srv/www/crowbar", "/opt/dell/crowbar_framework"]
+rails_root = rails_roots.find { |dir| File.exists?("#{dir}/config/crowbar.env") }
+
+raise "Cannot find directory of Crowbar Rails application." if rails_root.nil?
+
 case node[:platform]
 when "ubuntu","debian"
   pkglist = %w(
@@ -146,12 +151,12 @@ directory "/root/.chef" do
   action :create
 end
 
-cookbook_file "/etc/profile.d/crowbar.sh" do
+template "/etc/profile.d/crowbar.sh" do
+  source "crowbar.sh.erb"
   owner "root"
   group "root"
   mode "0755"
-  action :create
-  source "crowbar.sh"
+  variables(:use_opt => rails_root.include?("/opt"))
 end
 
 directory "/etc/sudoers.d" do
@@ -204,17 +209,17 @@ end
 
 bash "Add crowbar chef client" do
   environment({'EDITOR' => '/bin/true', 'HOME' => '/root'})
-  code "knife client create crowbar -a --file /opt/dell/crowbar_framework/config/client.pem -u chef-webui -k /etc/chef/webui.pem "
-  not_if "export HOME=/root;knife client list -u crowbar -k /opt/dell/crowbar_framework/config/client.pem"
+  code "knife client create crowbar -a --file #{rails_root}/config/client.pem -u chef-webui -k /etc/chef/webui.pem "
+  not_if "export HOME=/root;knife client list -u crowbar -k #{rails_root}/config/client.pem"
 end
 
-file "/opt/dell/crowbar_framework/tmp/queue.lock" do
+file "#{rails_root}/tmp/queue.lock" do
   owner "crowbar"
   group "crowbar"
   mode "0644"
   action :create
 end
-file "/opt/dell/crowbar_framework/tmp/ip.lock" do
+file "#{rails_root}/tmp/ip.lock" do
   owner "crowbar"
   group "crowbar"
   mode "0644"
@@ -273,7 +278,7 @@ unless node["crowbar"].nil? or node["crowbar"]["users"].nil? or node["crowbar"][
     users[k] = h
   end
 
-  template "/opt/dell/crowbar_framework/htdigest" do
+  template "#{rails_root}/htdigest" do
     source "htdigest.erb"
     variables(:users => users, :realm => realm)
     owner "crowbar"
@@ -286,18 +291,18 @@ else
 end
 
 bash "set permissions" do
-  code "chown -R crowbar:crowbar /opt/dell/crowbar_framework"
-  not_if "ls -al /opt/dell/crowbar_framework/README | grep -q crowbar"
+  code "chown -R crowbar:crowbar #{rails_root}"
+  not_if "ls -al #{rails_root}/README | grep -q crowbar"
 end
 
-cookbook_file "/opt/dell/crowbar_framework/config.ru" do
+cookbook_file "#{rails_root}/config.ru" do
   source "config.ru"
   owner "crowbar"
   group "crowbar"
   mode "0644"
 end
 
-template "/opt/dell/crowbar_framework/rainbows.cfg" do
+template "#{rails_root}/rainbows.cfg" do
   source "rainbows.cfg.erb"
   owner "crowbar"
   group "crowbar"
@@ -309,10 +314,10 @@ template "/opt/dell/crowbar_framework/rainbows.cfg" do
             :group => "crowbar",
             :logdir => logdir,
             :logname => "production",
-            :app_location => "/opt/dell/crowbar_framework")
+            :app_location => rails_root)
 end
 
-template "/opt/dell/crowbar_framework/rainbows-dev.cfg" do
+template "#{rails_root}/rainbows-dev.cfg" do
   source "rainbows.cfg.erb"
   owner "crowbar"
   group "crowbar"
@@ -324,7 +329,7 @@ template "/opt/dell/crowbar_framework/rainbows-dev.cfg" do
             :group => "crowbar",
             :logdir => logdir,
             :logname => "development",
-            :app_location => "/opt/dell/crowbar_framework")
+            :app_location => rails_root)
 end
 
 if node[:platform] != "suse"
@@ -338,7 +343,7 @@ if node[:platform] != "suse"
 
   template "/etc/bluepill/crowbar-webserver.pill" do
     source "crowbar-webserver.pill.erb"
-    variables(:logdir => logdir, :crowbar_home => crowbar_home)
+    variables(:logdir => logdir, :crowbar_home => crowbar_home, :rails_root => rails_root)
   end
 
   bluepill_service "crowbar-webserver" do

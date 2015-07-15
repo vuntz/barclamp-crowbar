@@ -120,8 +120,15 @@ test -x $RAINBOWS_BIN || { echo "$RAINBOWS_BIN not installed";
 	else exit 5; fi; }
 
 # Check for existence of needed config file and read it
-RAINBOWS_CONFIG=/opt/dell/crowbar_framework/rainbows.cfg
-test -r $RAINBOWS_CONFIG || { echo "$RAINBOWS_CONFIG does not exist";
+RAINBOWS_CONFIG=
+for rails_root in /srv/www/crowbar /opt/dell/crowbar_framework; do
+    if [ -r "$rails_root/rainbows.cfg" ]; then
+        RAINBOWS_CONFIG="$rails_root/rainbows.cfg"
+        break
+    fi
+done
+
+test -n "$RAINBOWS_CONFIG" || { echo "rainbows.cfg does not exist";
 	if [ "$1" = "stop" ]; then exit 0;
 	else exit 6; fi; }
 
