@@ -18,12 +18,15 @@
 
 require 'rubygems'
 require 'kwalify'
+require 'pathname'
 require 'uri'
 
-VALIDATOR_PRIMARY = '/opt/dell/crowbar_framework/app/models/crowbar_validator.rb'
-VALIDATOR_BACKUP = '/opt/dell/barclamps/crowbar/crowbar_framework/app/models/crowbar_validator.rb'
+rails_roots = ["/srv/www/crowbar", "/opt/dell/crowbar_framework", "../crowbar_framework"]
+rails_root = rails_roots.find { |dir| File.directory?(dir) }
 
-require '/opt/dell/crowbar_framework/app/models/crowbar_validator.rb' #(File.exist? VALIDATOR_PRIMARY ? VALIDATOR_PRIMARY : VALIDATOR_BACKUP)
+raise "Cannot find directory of Crowbar Rails application." if rails_root.nil?
+
+require "#{rails_root}/app/models/crowbar_validator.rb"
 
 def validate(schema_filename, config_filename)
   ## validate schema definition

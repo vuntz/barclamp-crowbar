@@ -56,7 +56,23 @@ end
 
 
 if __FILE__ == $0
-  base_dir = ARGV[0].nil? ? "/opt/dell/chef/data_bags" : ARGV[0]
+  base_dir = nil
+
+  if ARGV[0].nil?
+    ["/usr/share/crowbar", "/opt/dell"].each do |dir|
+      base_dir = "#{dir}/chef/data_bags"
+      break if File.directory? base_dir
+      base_dir = nil
+    end
+  else
+    base_dir = ARGV[0]
+  end
+
+  if base_dir.nil?
+    puts "Cannot find Chef data bags"
+    exit -1
+  end
+
   puts "Using #{base_dir}"
   err = verify_bags( base_dir)
   exit -3 if err

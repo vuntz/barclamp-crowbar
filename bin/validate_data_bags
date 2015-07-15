@@ -16,11 +16,39 @@
 # limitations under the License.
 #
 
+bindir=
+for dir in /usr/lib/crowbar /opt/dell/bin "`dirname $0`"; do
+    if [ -e "$dir/validate_data_bag.rb" ]; then
+        bindir="$dir"
+        break
+    fi
+done
+
+if [ -z "$bindir" ]; then
+    echo "Cannot find validate_data_bag.rb"
+    exit 1
+fi
+
+chef_databags="$1"
+if [ -z "$chef_databags" ]; then
+    for dir in /usr/share/crowbar /opt/dell; do
+        if [ -e "$dir/chef/data_bags" ]; then
+            chef_databags="$dir/chef/data_bags"
+            break
+        fi
+    done
+
+    if [ -z "$chef_databags" ]; then
+        echo "Cannot find Chef data bags"
+        exit 1
+    fi
+fi
+
 ERC=0
-cd "${1:-/opt/dell/chef/data_bags}"
+cd "$chef_databags"
 
 for item in */*.json; do
-    /opt/dell/bin/validate_data_bag.rb "${item%.json}.schema" $item
+    "$bindir/validate_data_bag.rb" "${item%.json}.schema" $item
     RC=$?
     if [ $RC -ne 0 ] ; then
 	ERC=$RC

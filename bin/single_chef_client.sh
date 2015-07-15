@@ -16,5 +16,18 @@
 # limitations under the License.
 #
 
-nohup /opt/dell/bin/looper_chef_client.sh &
+bindir=
+for dir in /usr/lib/crowbar /opt/dell/bin "`dirname $0`"; do
+    if [ -e "$dir/looper_chef_client.sh" ]; then
+        bindir="$dir"
+        break
+    fi
+done
+
+if [ -z "$bindir" ]; then
+    echo "Cannot find looper_chef_client.sh"
+    exit 1
+fi
+
+nohup "$bindir/looper_chef_client.sh" &
 

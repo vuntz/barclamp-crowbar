@@ -25,6 +25,19 @@ touch "$needrunfile"
 
 obtained_lock=''
 
+bindir=
+for dir in /usr/lib/crowbar /opt/dell/bin "`dirname $0`"; do
+    if [ -e "$dir/blocking_chef_client.sh" ]; then
+        bindir="$dir"
+        break
+    fi
+done
+
+if [ -z "$bindir" ]; then
+    echo "Cannot find blocking_chef_client.sh"
+    exit 1
+fi
+
 # Is there already a lock file?
 if [ -e "$lockfile" ]; then
     pid="$(<$lockfile)"
@@ -45,7 +58,7 @@ if [ -n "$obtained_lock" ]; then
     while true; do
 	rm -f "$needrunfile"
 	
-	/opt/dell/bin/blocking_chef_client.sh
+	"$bindir/blocking_chef_client.sh"
 	
 	while [[ ! -f "$needrunfile" ]]
 	do

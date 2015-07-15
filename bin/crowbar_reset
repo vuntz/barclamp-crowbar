@@ -18,7 +18,19 @@
 #   reset_nodes
 
 ME="`basename $0`"
-RAILS_ROOT="/opt/dell/crowbar_framework"
+
+RAILS_ROOT=
+for dir in /srv/www/crowbar /opt/dell/crowbar_framework; do
+    if [ -e "$dir/config/crowbar.env" ]; then
+        bindir="$dir"
+        break
+    fi
+done
+
+if [ -z "$RAILS_ROOT" ]; then
+    echo "Cannot find directory of Crowbar Rails application."
+    exit 1
+fi
 
 main () {
     if [ "$1" == '-h' ] || [ "$1" == '--help' ]; then
