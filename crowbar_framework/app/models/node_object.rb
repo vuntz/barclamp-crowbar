@@ -364,7 +364,7 @@ class NodeObject < ChefObject
     @role.description = chef_description
 
     # move this to event driven model one day
-    system("sudo", "-i", Rails.root.join("..", "bin", "single_chef_client.sh").expand_path.to_s)
+    system("sudo", "-i", Crowbar::Path.libdir.join("single_chef_client.sh").expand_path.to_s)
   end
 
   def public_name(suggest=false)

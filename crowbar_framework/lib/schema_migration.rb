@@ -61,7 +61,7 @@ module SchemaMigration
   private
 
   def self.data_bags_path
-    Rails.root.join("..", "chef", "data_bags", "crowbar").expand_path
+    Crowbar::Path.chef_datadir.join("data_bags", "crowbar").expand_path
   end
 
   def self.get_migrate_dir(bc_name)

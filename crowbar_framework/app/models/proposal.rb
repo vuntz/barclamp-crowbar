@@ -90,7 +90,7 @@ class Proposal < ActiveRecord::Base
   end
 
   def properties_template_dir
-    Rails.root.join("../chef/data_bags/crowbar/")
+    Crowbar::Path.chef_datadir.join("data_bags", "crowbar").expand_path
   end
 
   def set_default_name

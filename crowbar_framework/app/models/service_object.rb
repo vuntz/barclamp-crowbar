@@ -897,7 +897,7 @@ class ServiceObject
   end
 
   def proposal_schema_directory
-    Rails.root.join("..", "chef", "data_bags", "crowbar").expand_path
+    Crowbar::Path.chef_datadir.join("data_bags", "crowbar").expand_path
   end
 
   #
@@ -1536,7 +1536,7 @@ class ServiceObject
       unless admin_list.empty?
         admin_list.each do |node|
           filename = "#{ENV['CROWBAR_LOG_DIR']}/chef-client/#{node}.log"
-          pid = run_remote_chef_client(node, Rails.root.join("..", "bin", "single_chef_client.sh").expand_path.to_s, filename)
+          pid = run_remote_chef_client(node, Crowbar::Path.libdir.join("single_chef_client.sh").expand_path.to_s, filename)
           pids[node] = pid
         end
         status = Process.waitall
@@ -1548,7 +1548,7 @@ class ServiceObject
               node = pids[baddie[0]]
               @logger.warn("Re-running chef-client (admin) again for a failure: #{node} #{@bc_name} #{inst}")
               filename = "#{ENV['CROWBAR_LOG_DIR']}/chef-client/#{node}.log"
-              pid = run_remote_chef_client(node, Rails.root.join("..", "bin", "single_chef_client.sh").expand_path.to_s, filename)
+              pid = run_remote_chef_client(node, Crowbar::Path.libdir.join("single_chef_client.sh").expand_path.to_s, filename)
               pids[pid] = node
             end
             status = Process.waitall
@@ -1570,7 +1570,7 @@ class ServiceObject
     end
 
     # XXX: This should not be done this way.  Something else should request this.
-    system("sudo", "-i", Rails.root.join("..", "bin", "single_chef_client.sh").expand_path.to_s) if !ran_admin
+    system("sudo", "-i", Crowbar::Path.libdir.join("single_chef_client.sh").expand_path.to_s) if !ran_admin
 
     # Post deploy callback
     begin
